@@ -5,6 +5,7 @@ import postcss from 'rollup-plugin-postcss'
 import path from 'path'
 import htmlTemplate from 'rollup-plugin-generate-html-template';
 import clear from 'rollup-plugin-clear'
+import kontra from 'rollup-plugin-kontra'
 import serve from 'rollup-plugin-serve'
 import livereload from 'rollup-plugin-livereload'
 
@@ -24,6 +25,20 @@ export default {
     // To import libs from node_modules
     resolve(),
     commonjs(),
+    // contra rollup plugin
+    kontra({
+      gameObject: {
+        // enable only velocity and rotation functionality
+        velocity: true,
+        rotation: true,
+        acceleration: true,
+        ttl: true,
+      },
+      vector: {
+        // enable vector length functionality
+        length: true
+      },
+    }),
     // To include css from scripts, combine and minimize
     postcss({
       minimize: production,
