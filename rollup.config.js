@@ -8,6 +8,7 @@ import clear from 'rollup-plugin-clear'
 import kontra from 'rollup-plugin-kontra'
 import serve from 'rollup-plugin-serve'
 import livereload from 'rollup-plugin-livereload'
+import copy from 'rollup-plugin-copy'
 
 // dev build if watching, prod build if not
 const production = !process.env.ROLLUP_WATCH;
@@ -71,6 +72,11 @@ export default {
       targets: ['dist'],
       // optional, whether clear the directories when rollup recompile on --watch mode.
       watch: true, // default: false
+    }),
+    copy({
+      targets: [
+        { src: 'assets/', dest: 'dist/' }
+      ]
     }),
     !production && serve({
       open: true,
