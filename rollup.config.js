@@ -39,6 +39,8 @@ export default {
         // enable vector length functionality
         length: true
       },
+      debug: true,
+      sprite: { image: true, animation: true }
     }),
     // To include css from scripts, combine and minimize
     postcss({
