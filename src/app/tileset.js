@@ -7,6 +7,7 @@ initKeys();
 load(
   'assets/colored_tilemap_packed.png',
   'assets/sprite2.png',
+  'assets/george.png',
   'assets/tilemap.json'
 )
   .then(assets => {
@@ -15,29 +16,27 @@ load(
     let worldWidth = tileEngine.width * tileEngine.tilewidth;
     let worldHeight = tileEngine.height * tileEngine.tileheight;
 
-    // console.log("tileEngine.width: %d, tileEngine.tilewidth %d", tileEngine.width * tileEngine.tilewidth);
-
-    let image = imageAssets['assets/sprite2.png'];
+    let image = imageAssets['assets/george.png'];
 
     let spriteSheet = SpriteSheet({
       image: image,
-      frameWidth: 32,
-      frameHeight: 32,
+      frameWidth: 48,
+      frameHeight: 48,
       animations: {
         walk_down: {
-          frames: '0..3',
+          frames: [0, 4, 8, 12],
           frameRate: 8,
         },
         walk_left: {
-          frames: '4..7',
+          frames: [1, 5, 9, 13],
           frameRate: 8,
         },
         walk_right: {
-          frames: '8..11',
+          frames: [3, 7, 11, 15],
           frameRate: 8,
         },
         walk_up: {
-          frames: '12..15',
+          frames: [2, 6, 10, 14],
           frameRate: 8,
         }
       }
@@ -46,16 +45,13 @@ load(
     let sprite = Sprite({
       x: 200,
       y: 200,
-      anchor: { x: 16, y: 16 },
-      height: 32,
-      width: 32,
-      speed: 3,
+      //anchor: { x: 0.5, y: 0.5 },
+      height: 48,
+      width: 48,
+      speed: 2,
       // required for an animation sprite
       animations: spriteSheet.animations,
       update: function (dt) {
-
-        // console.log("player.x %d player.y %d, ", this.x, this.y);
-        // console.log("tileEngine.sx %d tileEngine.sy %d, ", tileEngine.sx, tileEngine.sy);
 
         let collisionBox = {
           x: this.x + tileEngine.sx,
@@ -87,9 +83,11 @@ load(
             tileEngine.sx -= this.speed;
           }
 
-        } else if (keyPressed('right')) {
+        }
+
+        if (keyPressed('right')) {
           this.playAnimation('walk_right');
-        
+
           collisionBox.x += this.speed;
 
           if (tileEngine.layerCollidesWith('collisions', collisionBox)) {
@@ -110,7 +108,9 @@ load(
             tileEngine.sx += this.speed;
           }
 
-        } else if (keyPressed('up')) {
+        }
+
+        if (keyPressed('up')) {
           this.playAnimation('walk_up');
 
           collisionBox.y -= this.speed;
@@ -133,7 +133,9 @@ load(
             tileEngine.sy -= this.speed;
           }
 
-        } else if (keyPressed('down')) {
+        }
+
+        if (keyPressed('down')) {
           this.playAnimation('walk_down');
 
           collisionBox.y += this.speed;
@@ -157,7 +159,6 @@ load(
           }
 
         }
-
       }
     });
 
@@ -175,4 +176,5 @@ load(
     });
 
     loop.start();
+
   });
