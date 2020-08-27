@@ -81,7 +81,7 @@ export default {
       ]
     }),
     !production && serve({
-      open: true,
+      open: false,
       verbose: true,
       contentBase: ['dist'],
       port: 8080
