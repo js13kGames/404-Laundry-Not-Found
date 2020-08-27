@@ -53,12 +53,8 @@ load(
       // rendering sock sprite
       sock.render();
 
-      // render player black magic
-      context.save();
-      // Translate coordinates to keep player in the middle of the screen
-      context.translate(-player.sx, -player.sy);
+      // render player
       player.render();
-      context.restore();
     }
   });
 
