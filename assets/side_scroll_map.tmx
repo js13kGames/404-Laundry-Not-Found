@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="320" height="60" tilewidth="8" tileheight="8" infinite="0" nextlayerid="4" nextobjectid="11">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="320" height="60" tilewidth="8" tileheight="8" infinite="0" nextlayerid="5" nextobjectid="13">
  <editorsettings>
   <export target="side_scroll_map2.json" format="json"/>
  </editorsettings>
- <tileset firstgid="1" source="arcade-standard-29-8x.tsx"/>
+ <tileset firstgid="1" name="arcade-standard-29-8x" tilewidth="8" tileheight="8" tilecount="29" columns="29">
+  <image source="arcade-standard-29-8x.png" width="232" height="8"/>
+ </tileset>
  <layer id="1" name="floors" width="320" height="60">
   <data encoding="csv">
 24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,
@@ -135,5 +137,9 @@
  <objectgroup id="3" name="platforms" visible="0">
   <object id="9" name="p2" type="platform" x="0" y="288" width="2560" height="16"/>
   <object id="10" name="p1" type="platform" x="0" y="400" width="2560" height="16"/>
+ </objectgroup>
+ <objectgroup id="4" name="ladders" visible="0">
+  <object id="11" name="l1" type="ladder" x="128" y="288" width="40" height="112"/>
+  <object id="12" name="l2" type="ladder" x="2392" y="288" width="40" height="112"/>
  </objectgroup>
 </map>

@@ -1,4 +1,4 @@
-import { keyPressed } from 'kontra';
+import { keyPressed, collides } from 'kontra';
 import { CSprite } from './csprite'
 
 const HORIZONTAL_SPEED = 3;
@@ -61,7 +61,7 @@ export const Player = (properties) => {
     color: 'red',
     speed: HORIZONTAL_SPEED,
     state: STATE_ON_PLATFORM,
-
+    onLadder: false,
     update: function (dt) {
 
       if (keyPressed('left')) {
@@ -109,7 +109,22 @@ export const Player = (properties) => {
         this.state = STATE_ON_PLATFORM;
       }
 
+      if (this.onLadder && keyPressed("up")) {
+        this.y -= 2;
+      }
+
       this.advance(dt);
+    },
+    checkCollisions: function(ladders = []) {
+        // Check ladder collisions
+        this.onLadder = false;
+        for (let ladder of ladders) {
+          if (collides(ladder, this)) {
+            this.onLadder = ladder.x < this.x && ladder.x + ladder.width > this.x + this.width;
+            this.onLadder = this.onLadder && this.y + this.height > ladder.y;
+            break;
+          }
+        }
     }
   });
 }

@@ -1,6 +1,7 @@
 import { init, load, dataAssets, TileEngine, GameLoop, initKeys } from 'kontra';
 import { Player } from './player';
 import { Sock } from './sock';
+import { CSprite } from './csprite';
 
 let { canvas, context } = init();
 
@@ -40,9 +41,24 @@ load(
   // Add sock to the tileEngine to update sx and sy proportionally
   tileEngine.addObject(sock);
 
+  let ladders = [];
+
+  // Create ladders
+  tileEngine.layers.forEach(layer => {
+    if (layer.name == "ladders") {
+      layer.objects.forEach(element => {
+        let ladder = CSprite(element);
+        ladder.color = 'white';
+        tileEngine.addObject(ladder);
+        ladders.push(ladder);
+      });
+    }
+  });
+
   // use kontra.gameLoop to play the animation
   let loop = GameLoop({
     update: function (dt) {
+      player.checkCollisions(ladders);
       player.update(dt);
       sock.update(dt);
     },
@@ -52,6 +68,11 @@ load(
 
       // rendering sock sprite
       sock.render();
+
+      // Rendering ladders
+      ladders.forEach(l => {
+        l.render();
+      });
 
       // render player
       player.render();
