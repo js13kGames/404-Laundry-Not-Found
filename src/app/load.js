@@ -55,10 +55,21 @@ load(
     }
   });
 
+  let platforms = [];
+
+  // Create platforms
+  tileEngine.layers.forEach(layer => {
+    if (layer.name == "platforms") {
+      layer.objects.forEach(element => {
+        platforms.push(element);
+      });
+    }
+  });
+
   // use kontra.gameLoop to play the animation
   let loop = GameLoop({
     update: function (dt) {
-      player.checkCollisions(ladders);
+      player.checkCollisions(ladders, platforms);
       player.update(dt);
       sock.update(dt);
     },

@@ -62,6 +62,8 @@ export const Player = (properties) => {
     speed: HORIZONTAL_SPEED,
     state: STATE_ON_PLATFORM,
     onLadder: false,
+    onPlatform: false,
+    currentPlatform: null,
     update: function (dt) {
 
       if (keyPressed('left')) {
@@ -101,10 +103,8 @@ export const Player = (properties) => {
         this.dy += GRAVITY;
       }
 
-      const platform = this.y >= 368;
-
-      if (this.dy > 0 && platform) {
-        this.y = 368;
+      if (this.dy > 0 && this.onPlatform) {
+        this.y = this.currentPlatform.y - this.height;
         this.dy = 0;
         this.state = STATE_ON_PLATFORM;
       }
@@ -115,16 +115,26 @@ export const Player = (properties) => {
 
       this.advance(dt);
     },
-    checkCollisions: function(ladders = []) {
-        // Check ladder collisions
-        this.onLadder = false;
-        for (let ladder of ladders) {
-          if (collides(ladder, this)) {
-            this.onLadder = ladder.x < this.x && ladder.x + ladder.width > this.x + this.width;
-            this.onLadder = this.onLadder && this.y + this.height > ladder.y;
-            break;
-          }
+    checkCollisions: function (ladders = [], platforms = []) {
+      // Check ladder collisions
+      this.onLadder = false;
+      for (let ladder of ladders) {
+        if (collides(ladder, this)) {
+          this.onLadder = true;
+          break;
         }
+      }
+      // Check platforms collisions
+      this.onPlatform = false;
+      for (let platform of platforms) {
+        if (platform.x < this.x && platform.x + platform.width > this.x + this.width &&
+          this.y + this.height === platform.y
+        ) {
+          this.onPlatform = true;
+          this.currentPlatform = platform;
+          break;
+        }
+      }
     }
   });
 }
