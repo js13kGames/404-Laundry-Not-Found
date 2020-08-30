@@ -4,8 +4,6 @@ import { CSprite } from './csprite'
 const HORIZONTAL_SPEED = 3;
 const GRAVITY = 1;
 const JUMP_VELOCITY = -12;
-const STATE_ON_PLATFORM = 0;
-const STATE_FALLING = 1;
 
 /**
  * A tile engine for managing and drawing tilesets.
@@ -60,10 +58,11 @@ export const Player = (properties) => {
     // Change later for the sprite sheet animations
     color: 'red',
     speed: HORIZONTAL_SPEED,
-    state: STATE_ON_PLATFORM,
     onLadder: false,
     onPlatform: false,
+    isFalling: false,
     currentPlatform: null,
+    
     update: function (dt) {
 
       if (keyPressed('left')) {
@@ -94,27 +93,44 @@ export const Player = (properties) => {
         }
       }
 
-      if (keyPressed('space') && this.state === STATE_ON_PLATFORM) {
+      if (keyPressed('space') && this.onPlatform) {
         this.dy = JUMP_VELOCITY;
-        this.state = STATE_FALLING;
+        this.isFalling = true;
       }
 
-      if (this.state === STATE_FALLING) {
+      if (!(this.onPlatform || this.onLadder)) {
+        this.isFalling = true;
+      }
+
+      if (this.isFalling) {
         this.dy += GRAVITY;
       }
 
-      if (this.dy > 0 && this.onPlatform) {
+      if (this.dy >= 0 && this.onPlatform) {
         this.y = this.currentPlatform.y - this.height;
         this.dy = 0;
-        this.state = STATE_ON_PLATFORM;
+        this.isFalling = false;
       }
 
-      if (this.onLadder && keyPressed("up")) {
+      if (keyPressed("up") && this.onLadder) {
         this.y -= 2;
+      }
+
+      if (keyPressed("down") && this.onLadder) {
+        this.y += 2;
+        if (this.onPlatform && (this.y + this.height >= this.currentPlatform.y)) {
+          this.y = this.currentPlatform.y - this.height;
+        }
       }
 
       this.advance(dt);
     },
+    /**
+     * Check for collisions
+     *
+     * @param {Array.<{x: Number, y: Number, height: Number, width: Number}>} [ladders=[]]
+     * @param {Array.<{x: Number, y: Number, height: Number, width: Number}>} [platforms=[]]
+     */
     checkCollisions: function (ladders = [], platforms = []) {
       // Check ladder collisions
       this.onLadder = false;
@@ -126,8 +142,9 @@ export const Player = (properties) => {
       }
       // Check platforms collisions
       this.onPlatform = false;
+      this.currentPlatform = null;
       for (let platform of platforms) {
-        if (platform.x < this.x && platform.x + platform.width > this.x + this.width &&
+        if (platform.x <= this.x && platform.x + platform.width >= this.x + this.width &&
           this.y + this.height === platform.y
         ) {
           this.onPlatform = true;
