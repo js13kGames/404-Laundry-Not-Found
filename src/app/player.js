@@ -1,4 +1,4 @@
-import { keyPressed, collides } from 'kontra';
+import { keyPressed } from 'kontra';
 import { CSprite } from './csprite'
 
 const HORIZONTAL_SPEED = 3;
@@ -62,12 +62,20 @@ export const Player = (properties) => {
     onPlatform: false,
     isFalling: false,
     currentPlatform: null,
-    
+    currentLadder: null,
     update: function (dt) {
 
       if (keyPressed('left')) {
         // decrease x coordinate
         this.x -= this.speed;
+
+        // limit character to ladder bounds
+        if (!this.onPlatform && this.onLadder) {
+          if (this.x < this.currentLadder.x) {
+            this.x = this.currentLadder.x;
+          }
+        }
+
         // limit player to the left limit of the canvas
         if (this.x < 0) {
           this.x = 0;
@@ -82,6 +90,14 @@ export const Player = (properties) => {
       if (keyPressed('right')) {
         // increase x coordinate
         this.x += this.speed;
+
+        // limit character to ladder bounds
+        if (!this.onPlatform && this.onLadder) {
+          if (this.x > this.currentLadder.x + this.currentLadder.width - this.width) {
+            this.x = this.currentLadder.x + this.currentLadder.width - this.width;
+          }
+        }
+
         // limit player to the right limit of the canvas
         if (this.x > worldWidth - this.width) {
           this.x = worldWidth - this.width;
@@ -98,10 +114,6 @@ export const Player = (properties) => {
         this.isFalling = true;
       }
 
-      if (!(this.onPlatform || this.onLadder)) {
-        this.isFalling = true;
-      }
-
       if (this.isFalling) {
         this.dy += GRAVITY;
       }
@@ -113,14 +125,21 @@ export const Player = (properties) => {
       }
 
       if (keyPressed("up") && this.onLadder) {
-        this.y -= 2;
+        if (this.onLadder) {
+          this.y -= 2;
+          // adjust to upper bound of the ladder
+          if (this.y + this.height < this.currentLadder.y) {
+            this.y = this.currentLadder.y - this.height;
+          }
+        }
       }
 
       if (keyPressed("down") && this.onLadder) {
-        this.y += 2;
-        if (this.onPlatform && (this.y + this.height >= this.currentPlatform.y)) {
-          this.y = this.currentPlatform.y - this.height;
-        }
+          this.y += 2;
+          // adjust to lower bound of the ladder
+          if (this.y + height > this.currentLadder.y + this.currentLadder.height) {
+            this.y = this.currentLadder.y + this.currentLadder.height - this.height;
+          }
       }
 
       this.advance(dt);
@@ -134,9 +153,13 @@ export const Player = (properties) => {
     checkCollisions: function (ladders = [], platforms = []) {
       // Check ladder collisions
       this.onLadder = false;
+      this.currentLadder = null;
       for (let ladder of ladders) {
-        if (collides(ladder, this)) {
+        if (ladder.x <= this.x && ladder.x + ladder.width >= this.x + this.width
+          && this.y >= ladder.y - this.height && this.y + this.height <= ladder.y + ladder.height
+        ) {
           this.onLadder = true;
+          this.currentLadder = ladder;
           break;
         }
       }
