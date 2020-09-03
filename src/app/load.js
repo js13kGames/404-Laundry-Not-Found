@@ -1,4 +1,4 @@
-import { init, load, dataAssets, TileEngine, GameLoop, initKeys } from 'kontra';
+import { init, load, dataAssets, TileEngine, GameLoop, initKeys, SpriteSheet, imageAssets } from 'kontra';
 import { Player } from './player';
 import { Sock } from './sock';
 import { CSprite } from './csprite';
@@ -9,6 +9,7 @@ initKeys();
 
 load(
   'assets/arcade-standard-29-8x.png',
+  'assets/player.png',
   'assets/side_scroll_map.json'
 ).then(assets => {
 
@@ -16,12 +17,45 @@ load(
 
   const worldWidth = tileEngine.width * tileEngine.tilewidth;
 
+  let spriteSheet = SpriteSheet({
+    image: imageAssets['assets/player.png'],
+    frameWidth: 16,
+    frameHeight: 16,
+    animations: {
+      idle_right: {
+        frames: 1,
+        loop: false,
+      },
+      idle_left: {
+        frames: 9,
+        loop: false,
+      },
+      walk_right: {
+        frames: '0..7',
+        frameRate: 12
+      },
+      walk_left: {
+        frames: '8..15',
+        frameRate: 12
+      },
+      jump_right: {
+        frames: '16..20',
+        frameRate: 12
+      },
+      jump_left: {
+        frames: '21..25',
+        frameRate: 12
+      },
+    }
+  });
+
   let player = Player({
-    width: 16,
-    height: 32,
+    width: 48,
+    height: 48,
     tileEngine: tileEngine,
     canvasWidth: canvas.width,
     canvasHeight: canvas.height,
+    animations: spriteSheet.animations,
   });
 
   // add player to the tileEngine to update sx and sy proportionally
@@ -56,7 +90,6 @@ load(
   });
 
   let platforms = [];
-
   // Create platforms
   tileEngine.layers.forEach(layer => {
     if (layer.name == "platforms") {

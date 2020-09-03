@@ -4,6 +4,9 @@ import { CSprite } from './csprite'
 const HORIZONTAL_SPEED = 3;
 const GRAVITY = 1;
 const JUMP_VELOCITY = -12;
+const FIRST_PLATFORM_Y = 80;
+const DIR_L = -1;
+const DIR_R = 1;
 
 /**
  * A tile engine for managing and drawing tilesets.
@@ -39,31 +42,36 @@ export const Player = (properties) => {
     width,
     height,
     tileEngine,
-    // animations,
+    animations,
     canvasWidth,
     canvasHeight,
   } = properties;
 
-  const FIRST_PLATFORM_Y = 80;
   const FLOOR = canvasHeight - FIRST_PLATFORM_Y - height;
 
   const worldWidth = tileEngine.width * tileEngine.tilewidth;
-  // const worldHeight = tileEngine.height * tileEngine.tileheight;
 
   return CSprite({
     x: x || canvasWidth / 2 - width,
     y: y || FLOOR,
     width: width,
     height: height,
-    // Change later for the sprite sheet animations
-    color: 'red',
+    animations: animations,
     speed: HORIZONTAL_SPEED,
     onLadder: false,
     onPlatform: false,
     isFalling: false,
     currentPlatform: null,
     currentLadder: null,
+    dirX: DIR_R,
     update: function (dt) {
+
+      // Set idle animation based on last direction
+      if (this.dirX === DIR_R && !this.isFalling) {
+        this.playAnimation('idle_right');
+      } else if (this.dirX === DIR_L && !this.isFalling) {
+        this.playAnimation('idle_left');
+      }
 
       if (keyPressed('left')) {
         // decrease x coordinate
@@ -85,6 +93,8 @@ export const Player = (properties) => {
             tileEngine.sx -= this.speed;
           }
         }
+        this.playAnimation('walk_left');
+        this.dirX = DIR_L;
       }
 
       if (keyPressed('right')) {
@@ -107,6 +117,8 @@ export const Player = (properties) => {
             tileEngine.sx += this.speed;
           }
         }
+        this.playAnimation('walk_right');
+        this.dirX = DIR_R;
       }
 
       if (keyPressed('space') && this.onPlatform) {
@@ -116,6 +128,12 @@ export const Player = (properties) => {
 
       if (this.isFalling) {
         this.dy += GRAVITY;
+        // Set jump/falling animation
+        if (this.dirX === DIR_R) {
+          this.playAnimation('jump_right');
+        } else if (this.dirX === DIR_L) {
+          this.playAnimation('jump_left');
+        }
       }
 
       if (this.dy >= 0 && this.onPlatform) {
