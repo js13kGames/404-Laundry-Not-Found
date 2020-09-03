@@ -34,6 +34,9 @@ export default {
         rotation: true,
         acceleration: true,
         ttl: true,
+        camera: true,
+        scale: true,
+        anchor: true,
       },
       vector: {
         // enable vector length functionality

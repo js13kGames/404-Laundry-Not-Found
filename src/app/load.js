@@ -1,7 +1,6 @@
-import { init, load, dataAssets, TileEngine, GameLoop, initKeys, SpriteSheet, imageAssets } from 'kontra';
+import { init, load, dataAssets, TileEngine, GameLoop, initKeys, SpriteSheet, imageAssets, Sprite } from 'kontra';
 import { Player } from './player';
 import { Sock } from './sock';
-import { CSprite } from './csprite';
 
 let { canvas, context } = init();
 
@@ -50,8 +49,8 @@ load(
   });
 
   let player = Player({
-    width: 48,
-    height: 48,
+    width: 16,
+    height: 16,
     tileEngine: tileEngine,
     canvasWidth: canvas.width,
     canvasHeight: canvas.height,
@@ -81,7 +80,7 @@ load(
   tileEngine.layers.forEach(layer => {
     if (layer.name == "ladders") {
       layer.objects.forEach(element => {
-        let ladder = CSprite(element);
+        let ladder = Sprite(element);
         ladder.color = 'white';
         tileEngine.addObject(ladder);
         ladders.push(ladder);

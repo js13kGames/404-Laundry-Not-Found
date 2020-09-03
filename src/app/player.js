@@ -1,5 +1,4 @@
-import { keyPressed } from 'kontra';
-import { CSprite } from './csprite'
+import { Sprite, keyPressed } from 'kontra';
 
 const HORIZONTAL_SPEED = 3;
 const GRAVITY = 1;
@@ -47,15 +46,18 @@ export const Player = (properties) => {
     canvasHeight,
   } = properties;
 
-  const FLOOR = canvasHeight - FIRST_PLATFORM_Y - height;
+  const FLOOR = canvasHeight - FIRST_PLATFORM_Y - height * 3 * 0.5;
 
   const worldWidth = tileEngine.width * tileEngine.tilewidth;
 
-  return CSprite({
-    x: x || canvasWidth / 2 - width,
+  return Sprite({
+    x: x || canvasWidth / 2,
     y: y || FLOOR,
     width: width,
     height: height,
+    anchor: {x: 0.5, y: 0.5},
+    scaleX: 3,
+    scaleY: 3,
     animations: animations,
     speed: HORIZONTAL_SPEED,
     onLadder: false,
