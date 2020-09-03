@@ -3,7 +3,6 @@ import { Sprite, keyPressed } from 'kontra';
 const HORIZONTAL_SPEED = 3;
 const GRAVITY = 1;
 const JUMP_VELOCITY = -12;
-const FIRST_PLATFORM_Y = 80;
 const DIR_L = -1;
 const DIR_R = 1;
 
@@ -40,24 +39,25 @@ export const Player = (properties) => {
     y,
     width,
     height,
+    anchor,
+    scaleX,
+    scaleY,
     tileEngine,
     animations,
     canvasWidth,
     canvasHeight,
   } = properties;
 
-  const FLOOR = canvasHeight - FIRST_PLATFORM_Y - height * 3 * 0.5;
-
   const worldWidth = tileEngine.width * tileEngine.tilewidth;
 
   return Sprite({
-    x: x || canvasWidth / 2,
-    y: y || FLOOR,
+    x: x || canvasWidth / 2, // center of canvas by default
+    y: y || canvasHeight / 2, // center of canvas by default
     width: width,
     height: height,
-    anchor: {x: 0.5, y: 0.5},
-    scaleX: 3,
-    scaleY: 3,
+    anchor: anchor,
+    scaleX: scaleX,
+    scaleY: scaleY,
     animations: animations,
     speed: HORIZONTAL_SPEED,
     onLadder: false,
@@ -66,6 +66,8 @@ export const Player = (properties) => {
     currentPlatform: null,
     currentLadder: null,
     dirX: DIR_R,
+    realHeight: height * scaleY * (anchor.y > 0 ? anchor.y : 1),
+    realWidth: width * scaleX * (anchor.x > 0 ? anchor.x : 1),
     update: function (dt) {
 
       // Set idle animation based on last direction
@@ -105,14 +107,14 @@ export const Player = (properties) => {
 
         // limit character to ladder bounds
         if (!this.onPlatform && this.onLadder) {
-          if (this.x > this.currentLadder.x + this.currentLadder.width - this.width) {
-            this.x = this.currentLadder.x + this.currentLadder.width - this.width;
+          if (this.x > this.currentLadder.x + this.currentLadder.width - this.realWidth) {
+            this.x = this.currentLadder.x + this.currentLadder.width - this.realWidth;
           }
         }
 
         // limit player to the right limit of the canvas
-        if (this.x > worldWidth - this.width) {
-          this.x = worldWidth - this.width;
+        if (this.x > worldWidth - this.realWidth) {
+          this.x = worldWidth - this.realWidth;
         } else {
           // the camera and the player together so long as he doesn't reach the edge
           if (this.x > canvasWidth / 2) {
@@ -139,7 +141,7 @@ export const Player = (properties) => {
       }
 
       if (this.dy >= 0 && this.onPlatform) {
-        this.y = this.currentPlatform.y - this.height;
+        this.y = this.currentPlatform.y - this.realHeight;
         this.dy = 0;
         this.isFalling = false;
       }
@@ -148,8 +150,8 @@ export const Player = (properties) => {
         if (this.onLadder) {
           this.y -= 2;
           // adjust to upper bound of the ladder
-          if (this.y + this.height < this.currentLadder.y) {
-            this.y = this.currentLadder.y - this.height;
+          if (this.y + this.realHeight < this.currentLadder.y) {
+            this.y = this.currentLadder.y - this.realHeight;
           }
         }
       }
@@ -158,7 +160,7 @@ export const Player = (properties) => {
           this.y += 2;
           // adjust to lower bound of the ladder
           if (this.y + height > this.currentLadder.y + this.currentLadder.height) {
-            this.y = this.currentLadder.y + this.currentLadder.height - this.height;
+            this.y = this.currentLadder.y + this.currentLadder.height - this.realHeight;
           }
       }
 
@@ -175,8 +177,8 @@ export const Player = (properties) => {
       this.onLadder = false;
       this.currentLadder = null;
       for (let ladder of ladders) {
-        if (ladder.x <= this.x && ladder.x + ladder.width >= this.x + this.width
-          && this.y >= ladder.y - this.height && this.y + this.height <= ladder.y + ladder.height
+        if (ladder.x <= this.x && ladder.x + ladder.width >= this.x + this.realWidth
+          && this.y >= ladder.y - this.realHeight && this.y + this.realHeight <= ladder.y + ladder.height
         ) {
           this.onLadder = true;
           this.currentLadder = ladder;
@@ -187,8 +189,8 @@ export const Player = (properties) => {
       this.onPlatform = false;
       this.currentPlatform = null;
       for (let platform of platforms) {
-        if (platform.x <= this.x && platform.x + platform.width >= this.x + this.width &&
-          this.y + this.height === platform.y
+        if (platform.x <= this.x && platform.x + platform.width >= this.x + this.realWidth &&
+          this.y + this.realHeight === platform.y
         ) {
           this.onPlatform = true;
           this.currentPlatform = platform;

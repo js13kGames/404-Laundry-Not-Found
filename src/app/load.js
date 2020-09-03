@@ -16,6 +16,29 @@ load(
 
   const worldWidth = tileEngine.width * tileEngine.tilewidth;
 
+  // Create ladders
+  let ladders = [];
+  tileEngine.layers.forEach(layer => {
+    if (layer.name == "ladders") {
+      layer.objects.forEach(element => {
+        let ladder = Sprite(element);
+        ladder.color = 'white';
+        tileEngine.addObject(ladder);
+        ladders.push(ladder);
+      });
+    }
+  });
+
+  // Create platforms
+  let platforms = [];
+  tileEngine.layers.forEach(layer => {
+    if (layer.name == "platforms") {
+      layer.objects.forEach(element => {
+        platforms.push(element);
+      });
+    }
+  });
+
   let spriteSheet = SpriteSheet({
     image: imageAssets['assets/player.png'],
     frameWidth: 16,
@@ -48,9 +71,19 @@ load(
     }
   });
 
+  const FIRST_PLATFORM_Y = platforms[platforms.length-1].y;
+  const PLAYER_WIDTH = 16;
+  const PLAYER_HIGHT = 16;
+  const PLAYER_SCALE = 3;
+  const PLAYER_ANCHOR = 0;
+
   let player = Player({
-    width: 16,
-    height: 16,
+    y: FIRST_PLATFORM_Y - PLAYER_HIGHT * PLAYER_SCALE * (PLAYER_ANCHOR > 0 ? PLAYER_ANCHOR : 1),
+    width: PLAYER_WIDTH,
+    height: PLAYER_HIGHT,
+    anchor: {x: PLAYER_ANCHOR, y: PLAYER_ANCHOR},
+    scaleX: PLAYER_SCALE,
+    scaleY: PLAYER_SCALE,
     tileEngine: tileEngine,
     canvasWidth: canvas.width,
     canvasHeight: canvas.height,
@@ -73,30 +106,6 @@ load(
 
   // Add sock to the tileEngine to update sx and sy proportionally
   tileEngine.addObject(sock);
-
-  let ladders = [];
-
-  // Create ladders
-  tileEngine.layers.forEach(layer => {
-    if (layer.name == "ladders") {
-      layer.objects.forEach(element => {
-        let ladder = Sprite(element);
-        ladder.color = 'white';
-        tileEngine.addObject(ladder);
-        ladders.push(ladder);
-      });
-    }
-  });
-
-  let platforms = [];
-  // Create platforms
-  tileEngine.layers.forEach(layer => {
-    if (layer.name == "platforms") {
-      layer.objects.forEach(element => {
-        platforms.push(element);
-      });
-    }
-  });
 
   // use kontra.gameLoop to play the animation
   let loop = GameLoop({
