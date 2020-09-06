@@ -1,6 +1,7 @@
 import { init, load, dataAssets, TileEngine, GameLoop, initKeys, SpriteSheet, imageAssets, Sprite } from 'kontra';
 import { Player } from './player';
 import { Sock } from './sock';
+import { HUD } from './hud';
 
 let { canvas, context } = init();
 
@@ -9,7 +10,8 @@ initKeys();
 load(
   'assets/arcade-standard-29-8x.png',
   'assets/player.png',
-  'assets/side_scroll_map.json'
+  'assets/side_scroll_map.json',
+  'assets/charset.png'
 ).then(assets => {
 
   let tileEngine = TileEngine(dataAssets['assets/side_scroll_map']);
@@ -71,7 +73,7 @@ load(
     }
   });
 
-  const FIRST_PLATFORM_Y = platforms[platforms.length-1].y;
+  const FIRST_PLATFORM_Y = platforms[platforms.length - 1].y;
   const PLAYER_WIDTH = 12;
   const PLAYER_HIGHT = 16;
   const PLAYER_SCALE = 3;
@@ -81,7 +83,7 @@ load(
     y: FIRST_PLATFORM_Y - PLAYER_HIGHT * PLAYER_SCALE * (PLAYER_ANCHOR > 0 ? PLAYER_ANCHOR : 1),
     width: PLAYER_WIDTH,
     height: PLAYER_HIGHT,
-    anchor: {x: PLAYER_ANCHOR, y: PLAYER_ANCHOR},
+    anchor: { x: PLAYER_ANCHOR, y: PLAYER_ANCHOR },
     scaleX: PLAYER_SCALE,
     scaleY: PLAYER_SCALE,
     tileEngine: tileEngine,
@@ -107,6 +109,13 @@ load(
   // Add sock to the tileEngine to update sx and sy proportionally
   tileEngine.addObject(sock);
 
+  let score = 0;
+
+  let hud = HUD({
+    score: score,
+    charset: imageAssets['assets/charset']
+  });
+
   // use kontra.gameLoop to play the animation
   let loop = GameLoop({
     update: function (dt) {
@@ -128,6 +137,9 @@ load(
 
       // render player
       player.render();
+
+      // render HUD
+      hud.render();
     }
   });
 

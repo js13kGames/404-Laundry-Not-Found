@@ -37,6 +37,7 @@ export default {
         camera: true,
         scale: true,
         anchor: true,
+        group: true,
       },
       vector: {
         // enable vector length functionality
