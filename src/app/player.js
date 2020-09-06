@@ -1,4 +1,4 @@
-import { Sprite, keyPressed } from 'kontra';
+import { Sprite, keyPressed, getWorldRect } from 'kontra';
 
 const HORIZONTAL_SPEED = 3;
 const GRAVITY = 1;
@@ -66,9 +66,9 @@ export const Player = (properties) => {
     currentPlatform: null,
     currentLadder: null,
     dirX: DIR_R,
-    realHeight: height * scaleY * (anchor.y > 0 ? anchor.y : 1),
-    realWidth: width * scaleX * (anchor.x > 0 ? anchor.x : 1),
     update: function (dt) {
+      // get scaled dimensions of the sprite
+      const wc = getWorldRect(this);
 
       // Set idle animation based on last direction
       if (this.dirX === DIR_R && !this.isFalling) {
@@ -107,14 +107,14 @@ export const Player = (properties) => {
 
         // limit character to ladder bounds
         if (!this.onPlatform && this.onLadder) {
-          if (this.x > this.currentLadder.x + this.currentLadder.width - this.realWidth) {
-            this.x = this.currentLadder.x + this.currentLadder.width - this.realWidth;
+          if (this.x > this.currentLadder.x + this.currentLadder.width - wc.width) {
+            this.x = this.currentLadder.x + this.currentLadder.width - wc.width;
           }
         }
 
         // limit player to the right limit of the canvas
-        if (this.x > worldWidth - this.realWidth) {
-          this.x = worldWidth - this.realWidth;
+        if (this.x > worldWidth - wc.width) {
+          this.x = worldWidth - wc.width;
         } else {
           // the camera and the player together so long as he doesn't reach the edge
           if (this.x > canvasWidth / 2) {
@@ -141,7 +141,7 @@ export const Player = (properties) => {
       }
 
       if (this.dy >= 0 && this.onPlatform) {
-        this.y = this.currentPlatform.y - this.realHeight;
+        this.y = this.currentPlatform.y - wc.height;
         this.dy = 0;
         this.isFalling = false;
       }
@@ -150,8 +150,8 @@ export const Player = (properties) => {
         if (this.onLadder) {
           this.y -= 2;
           // adjust to upper bound of the ladder
-          if (this.y + this.realHeight < this.currentLadder.y) {
-            this.y = this.currentLadder.y - this.realHeight;
+          if (this.y + wc.height < this.currentLadder.y) {
+            this.y = this.currentLadder.y - wc.height;
           }
         }
       }
@@ -160,7 +160,7 @@ export const Player = (properties) => {
           this.y += 2;
           // adjust to lower bound of the ladder
           if (this.y + height > this.currentLadder.y + this.currentLadder.height) {
-            this.y = this.currentLadder.y + this.currentLadder.height - this.realHeight;
+            this.y = this.currentLadder.y + this.currentLadder.height - wc.height;
           }
       }
 
@@ -173,12 +173,14 @@ export const Player = (properties) => {
      * @param {Array.<{x: Number, y: Number, height: Number, width: Number}>} [platforms=[]]
      */
     checkCollisions: function (ladders = [], platforms = []) {
+      // get scaled dimensions of the sprite
+      const wc = getWorldRect(this);
       // Check ladder collisions
       this.onLadder = false;
       this.currentLadder = null;
       for (let ladder of ladders) {
-        if (ladder.x <= this.x && ladder.x + ladder.width >= this.x + this.realWidth
-          && this.y >= ladder.y - this.realHeight && this.y + this.realHeight <= ladder.y + ladder.height
+        if (ladder.x <= this.x && ladder.x + ladder.width >= this.x + wc.width
+          && this.y >= ladder.y - wc.height && this.y + wc.height <= ladder.y + ladder.height
         ) {
           this.onLadder = true;
           this.currentLadder = ladder;
@@ -189,8 +191,8 @@ export const Player = (properties) => {
       this.onPlatform = false;
       this.currentPlatform = null;
       for (let platform of platforms) {
-        if (platform.x <= this.x && platform.x + platform.width >= this.x + this.realWidth &&
-          this.y + this.realHeight === platform.y
+        if (platform.x <= this.x && platform.x + platform.width >= this.x + wc.width &&
+          this.y + wc.height === platform.y
         ) {
           this.onPlatform = true;
           this.currentPlatform = platform;

@@ -41,7 +41,7 @@ load(
 
   let spriteSheet = SpriteSheet({
     image: imageAssets['assets/player.png'],
-    frameWidth: 16,
+    frameWidth: 12,
     frameHeight: 16,
     animations: {
       idle_right: {
@@ -72,7 +72,7 @@ load(
   });
 
   const FIRST_PLATFORM_Y = platforms[platforms.length-1].y;
-  const PLAYER_WIDTH = 16;
+  const PLAYER_WIDTH = 12;
   const PLAYER_HIGHT = 16;
   const PLAYER_SCALE = 3;
   const PLAYER_ANCHOR = 0;
