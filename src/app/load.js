@@ -109,11 +109,10 @@ load(
   // Add sock to the tileEngine to update sx and sy proportionally
   tileEngine.addObject(sock);
 
-  let score = 0;
-
   let hud = HUD({
-    score: score,
-    charset: imageAssets['assets/charset']
+    charset: imageAssets['assets/charset'],
+    elapsedTime: 0,
+    countdown: 60,
   });
 
   // use kontra.gameLoop to play the animation
@@ -122,6 +121,7 @@ load(
       player.checkCollisions(ladders, platforms);
       player.update(dt);
       sock.update(dt);
+      hud.update(dt);
     },
     render: function () {
       // render map
