@@ -113,6 +113,9 @@ load(
     charset: imageAssets['assets/charset'],
     elapsedTime: 0,
     countdown: 60,
+    score: 0,
+    width: canvas.width,
+    textScale: 1.5
   });
 
   // use kontra.gameLoop to play the animation
