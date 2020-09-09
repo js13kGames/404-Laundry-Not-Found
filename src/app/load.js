@@ -1,6 +1,6 @@
-import { init, load, dataAssets, TileEngine, GameLoop, initKeys, SpriteSheet, imageAssets, Sprite } from 'kontra';
+import { init, load, dataAssets, TileEngine, GameLoop, initKeys, SpriteSheet, imageAssets, Sprite, randInt } from 'kontra';
 import { Player } from './player';
-import { Sock } from './sock';
+import { Sock, SOCK_COLORS } from './sock';
 import { HUD } from './hud';
 
 let { canvas, context } = init();
@@ -11,7 +11,8 @@ load(
   'assets/arcade-standard-29-8x.png',
   'assets/player.png',
   'assets/side_scroll_map.json',
-  'assets/charset.png'
+  'assets/charset.png',
+  'assets/sock-sheet.png',
 ).then(assets => {
 
   let tileEngine = TileEngine(dataAssets['assets/side_scroll_map']);
@@ -95,19 +96,26 @@ load(
   // add player to the tileEngine to update sx and sy proportionally
   tileEngine.addObject(player);
 
-  let sock = Sock({
-    x: 10,
-    y: 480 - (20 * 8),
-    width: 10,
-    height: 10,
-    // Change later for the sprite sheet animations
-    color: 'blue',
-    dx: 2,
-    worldWidth: worldWidth
-  });
+  let socks = [];
 
-  // Add sock to the tileEngine to update sx and sy proportionally
-  tileEngine.addObject(sock);
+  const numberOfSocks = Math.floor(worldWidth / (13*4));
+
+  for (let i = 0; i < numberOfSocks; i++) {
+    const p = randInt(0, 5);
+    const color = SOCK_COLORS[p];
+    let sock = Sock({
+      x: 10 + i*13*4,
+      y: 480 - (20 * 8),
+      width: 13,
+      height: 15,
+      dx: 2,
+      worldWidth: worldWidth,
+      image: imageAssets['assets/sock-sheet'],
+      color: color,
+    });
+    tileEngine.addObject(sock);
+    socks.push(sock);
+  }
 
   let hud = HUD({
     charset: imageAssets['assets/charset'],
@@ -123,15 +131,19 @@ load(
     update: function (dt) {
       player.checkCollisions(ladders, platforms);
       player.update(dt);
-      sock.update(dt);
+      socks.forEach((sock) => {
+        sock.update(dt);
+      });
       hud.update(dt);
     },
     render: function () {
       // render map
       tileEngine.render();
 
-      // rendering sock sprite
-      sock.render();
+      // rendering sock sprites
+      socks.forEach((sock) => {
+        sock.render();
+      });
 
       // Rendering ladders
       ladders.forEach(l => {
