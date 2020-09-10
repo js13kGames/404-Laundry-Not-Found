@@ -25,11 +25,11 @@ export const HUD = (props) => {
   let score = new SpriteFont(
     Object.assign(DEFAULTS, {
       sourceImage: props.charset,
-      text: 'score: 0',
+      text: 'score 0',
       x: DEFAULTS.characterWidth,
       y: DEFAULTS.characterHeight,
       update : function(dt) {
-        this.text = `score: ${this.parent.score}`;
+        this.text = `score ${this.parent.score}`;
       }
     }),
     { scale: props.textScale }
@@ -40,13 +40,13 @@ export const HUD = (props) => {
   let time = new SpriteFont(
     Object.assign(DEFAULTS, {
       sourceImage: props.charset,
-      text: 'time: 00:00',
+      text: 'time 00:00',
       x: props.width - ('time: 00:00'.length * DEFAULTS.characterWidth * props.textScale) - DEFAULTS.characterWidth,
       y: DEFAULTS.characterHeight,
       update: function(dt) {
         const minutes = Math.floor(Math.ceil(this.parent.countdown) / 60);
         const seconds = Math.ceil(this.parent.countdown) - minutes * 60;
-        this.text = `time: ${minutes}:${seconds <= 9 ? '0' : ''}${seconds}`;
+        this.text = `time ${minutes}:${seconds <= 9 ? '0' : ''}${seconds}`;
       }
     }),
     {  scale: props.textScale, align: 'right' }
