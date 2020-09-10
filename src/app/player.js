@@ -159,7 +159,7 @@ export const Player = (properties) => {
       if (keyPressed("down") && this.onLadder) {
           this.y += 2;
           // adjust to lower bound of the ladder
-          if (this.y + height > this.currentLadder.y + this.currentLadder.height) {
+          if (this.y + wc.height > this.currentLadder.y + this.currentLadder.height) {
             this.y = this.currentLadder.y + this.currentLadder.height - wc.height;
           }
       }
