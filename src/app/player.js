@@ -138,6 +138,9 @@ export const Player = (properties) => {
         } else if (this.dirX === DIR_L) {
           this.playAnimation('jump_left');
         }
+      } else {
+        // fall off a cliff
+        this.isFalling = !this.onPlatform && !this.onLadder;
       }
 
       if (this.dy >= 0 && this.onPlatform) {
@@ -191,7 +194,7 @@ export const Player = (properties) => {
       this.onPlatform = false;
       this.currentPlatform = null;
       for (let platform of platforms) {
-        if (platform.x <= this.x && platform.x + platform.width >= this.x + wc.width &&
+        if (platform.x < this.x + wc.width*3/4 && platform.x + platform.width > this.x &&
           this.y + wc.height === platform.y
         ) {
           this.onPlatform = true;
