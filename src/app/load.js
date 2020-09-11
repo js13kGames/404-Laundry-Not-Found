@@ -1,4 +1,4 @@
-import { init, load, dataAssets, TileEngine, GameLoop, initKeys, SpriteSheet, imageAssets, Sprite, randInt } from 'kontra';
+import { init, load, dataAssets, TileEngine, GameLoop, initKeys, SpriteSheet, imageAssets, Sprite, randInt, collides } from 'kontra';
 import { Player } from './player';
 import { Sock, SOCK_COLORS } from './sock';
 import { HUD } from './hud';
@@ -98,13 +98,13 @@ load(
 
   let socks = [];
 
-  const numberOfSocks = Math.floor(worldWidth / (13*4));
+  const numberOfSocks = Math.floor(worldWidth / (13*6));
 
   for (let i = 0; i < numberOfSocks; i++) {
     const p = randInt(0, 5);
     const color = SOCK_COLORS[p];
     let sock = Sock({
-      x: 10 + i*13*4,
+      x: i*13*6,
       y: 480 - (20 * 8),
       width: 13,
       height: 15,
@@ -117,11 +117,13 @@ load(
     socks.push(sock);
   }
 
+  let score = 0;
+
   let hud = HUD({
     charset: imageAssets['assets/charset'],
     elapsedTime: 0,
     countdown: 60,
-    score: 0,
+    score: score,
     width: canvas.width,
     textScale: 1.5
   });
@@ -131,9 +133,23 @@ load(
     update: function (dt) {
       player.checkCollisions(ladders, platforms);
       player.update(dt);
+
+      for (let i = 0; i < socks.length; i++) {
+        let sock = socks[i];
+        if (collides(sock, player)) {
+          sock.ttl = 0;
+          score +=1;
+        }
+      }
+
+      socks = socks.filter(sprite => sprite.isAlive());
+
       socks.forEach((sock) => {
         sock.update(dt);
       });
+
+      hud.score = score;
+
       hud.update(dt);
     },
     render: function () {
