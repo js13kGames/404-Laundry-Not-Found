@@ -1,14 +1,14 @@
 import { terser } from "rollup-plugin-terser";
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import postcss from 'rollup-plugin-postcss'
-import path from 'path'
+import postcss from 'rollup-plugin-postcss';
+import path from 'path';
 import htmlTemplate from 'rollup-plugin-generate-html-template';
-import clear from 'rollup-plugin-clear'
-import kontra from 'rollup-plugin-kontra'
-import serve from 'rollup-plugin-serve'
-import livereload from 'rollup-plugin-livereload'
-import copy from 'rollup-plugin-copy'
+import clear from 'rollup-plugin-clear';
+import kontra from 'rollup-plugin-kontra';
+import serve from 'rollup-plugin-serve';
+import livereload from 'rollup-plugin-livereload';
+import copy from 'rollup-plugin-copy';
 
 // dev build if watching, prod build if not
 const production = !process.env.ROLLUP_WATCH;
@@ -81,7 +81,8 @@ export default {
     }),
     copy({
       targets: [
-        { src: 'assets/', dest: 'dist/' }
+        { src: 'assets/*.json', dest: 'dist/assets' },
+        { src: 'assets/*.png', dest: 'dist/assets' }
       ]
     }),
     !production && serve({
