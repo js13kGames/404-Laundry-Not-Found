@@ -52,12 +52,12 @@ export default {
       extract: path.resolve (production ? 'dist/main.min.css' : 'dist/main.css')
     }),
     production && terser({
-      ecma: '2018',
+      ecma: 2020,
       module: true,
       toplevel: true,
       compress: {
         keep_fargs: false,
-        passes: 5,
+        passes: 10,
         pure_funcs: ['assert', 'debug'],
         pure_getters: true,
         unsafe: true,
@@ -65,8 +65,14 @@ export default {
         unsafe_comps: true,
         unsafe_math: true,
         unsafe_methods: true,
+        unsafe_symbols: true,
       },
-      mangle: true
+      mangle: {
+        properties: true,
+      },
+      output: {
+        wrap_func_args: false,
+      },
     }),
     // to use html template and include script and styles bundles
     htmlTemplate({
