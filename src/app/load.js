@@ -8,9 +8,9 @@ let { canvas, context } = init();
 initKeys();
 
 load(
-  'assets/arcade-standard-29-8x.png',
-  'assets/player.png',
   'assets/side_scroll_map.json',
+  'assets/nature-paltformer-tileset-16x16.png',
+  'assets/player.png',
   'assets/charset.png',
   'assets/sock-sheet.png',
 ).then(assets => {
@@ -24,10 +24,7 @@ load(
   tileEngine.layers.forEach(layer => {
     if (layer.name == "ladders") {
       layer.objects.forEach(element => {
-        let ladder = Sprite(element);
-        ladder.color = 'white';
-        tileEngine.addObject(ladder);
-        ladders.push(ladder);
+        ladders.push(element);
       });
     }
   });
@@ -74,7 +71,7 @@ load(
     }
   });
 
-  const FIRST_PLATFORM_Y = platforms[platforms.length - 1].y;
+  const FIRST_PLATFORM_Y = platforms[0].y;
   const PLAYER_WIDTH = 12;
   const PLAYER_HIGHT = 16;
   const PLAYER_SCALE = 3;
@@ -159,11 +156,6 @@ load(
       // rendering sock sprites
       socks.forEach((sock) => {
         sock.render();
-      });
-
-      // Rendering ladders
-      ladders.forEach(l => {
-        l.render();
       });
 
       // render player

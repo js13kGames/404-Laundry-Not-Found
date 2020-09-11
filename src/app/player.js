@@ -143,7 +143,7 @@ export const Player = (properties) => {
         this.isFalling = !this.onPlatform && !this.onLadder;
       }
 
-      if (this.dy >= 0 && this.onPlatform) {
+      if (this.dy > 0 && this.onPlatform) {
         this.y = this.currentPlatform.y - wc.height;
         this.dy = 0;
         this.isFalling = false;
@@ -195,7 +195,7 @@ export const Player = (properties) => {
       this.currentPlatform = null;
       for (let platform of platforms) {
         if (platform.x < this.x + wc.width*3/4 && platform.x + platform.width > this.x &&
-          this.y + wc.height === platform.y
+          Math.abs(this.y + wc.height - platform.y) < 3
         ) {
           this.onPlatform = true;
           this.currentPlatform = platform;
