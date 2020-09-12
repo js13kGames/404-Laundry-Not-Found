@@ -1,10 +1,15 @@
-import { Sprite, keyPressed, getWorldRect } from 'kontra';
+import { Sprite, SpriteSheet, keyPressed, getWorldRect } from 'kontra';
 
 const HORIZONTAL_SPEED = 3;
 const GRAVITY = 1;
 const JUMP_VELOCITY = -12;
 const DIR_L = -1;
 const DIR_R = 1;
+
+const PLAYER_WIDTH = 12;
+const PLAYER_HIGHT = 16;
+const PLAYER_SCALE = 3;
+const PLAYER_ANCHOR = 0;
 
 /**
  * A tile engine for managing and drawing tilesets.
@@ -29,7 +34,7 @@ const DIR_R = 1;
  * @param {TileEngine} [properties.tileEngine] - Container tileEngine used to adjust the camera.
  * @param {Number} [properties.canvasWidth] - Width of the container canvas.
  * @param {Number} [properties.canvasHeight] - Height of the container canvas.
- * @param {Object} [properties.animations] - An object of Animations from a Spritesheet to animate the sprite.
+ * @param {Object} [properties.imageSheet] - Spritesheet image to animate the sprite.
  * 
  * @return {Sprite} 
  */
@@ -43,30 +48,71 @@ export const Player = (properties) => {
     scaleX,
     scaleY,
     tileEngine,
-    animations,
     canvasWidth,
     canvasHeight,
+    imageSheet,
+    platforms,
+    ladders,
   } = properties;
+
+  let playerSpriteSheet = SpriteSheet({
+    image: imageSheet,
+    frameWidth: 12,
+    frameHeight: 16,
+    animations: {
+      idle_right: {
+        frames: 1,
+        loop: false,
+      },
+      idle_left: {
+        frames: 9,
+        loop: false,
+      },
+      walk_right: {
+        frames: '0..7',
+        frameRate: 12
+      },
+      walk_left: {
+        frames: '8..15',
+        frameRate: 12
+      },
+      jump_right: {
+        frames: '16..20',
+        frameRate: 12
+      },
+      jump_left: {
+        frames: '21..25',
+        frameRate: 12
+      },
+    }
+  });
+
+  const FIRST_PLATFORM_Y = Array.isArray(platforms) && platforms.length ? platforms[0].y : canvasWidth / 2;
 
   const worldWidth = tileEngine.width * tileEngine.tilewidth;
 
   return Sprite({
     x: x || canvasWidth / 2, // center of canvas by default
-    y: y || canvasHeight / 2, // center of canvas by default
-    width: width,
-    height: height,
-    anchor: anchor,
-    scaleX: scaleX,
-    scaleY: scaleY,
-    animations: animations,
-    speed: HORIZONTAL_SPEED,
+    y: y || FIRST_PLATFORM_Y - PLAYER_HIGHT * PLAYER_SCALE * (PLAYER_ANCHOR > 0 ? PLAYER_ANCHOR : 1),
+    width: width || PLAYER_WIDTH,
+    height: height || PLAYER_HIGHT,
+    anchor: anchor || { x: PLAYER_ANCHOR, y: PLAYER_ANCHOR },
+    scaleX: scaleX || PLAYER_SCALE,
+    scaleY: scaleY || PLAYER_SCALE,
+    animations: playerSpriteSheet.animations,
+    speedX: HORIZONTAL_SPEED,
+    dirX: DIR_R,
     onLadder: false,
     onPlatform: false,
     isFalling: false,
     currentPlatform: null,
     currentLadder: null,
-    dirX: DIR_R,
+    ladders: ladders,
+    platforms: platforms,
     update: function (dt) {
+
+      this.checkCollisions();
+
       // get scaled dimensions of the sprite
       const wc = getWorldRect(this);
 
@@ -79,7 +125,7 @@ export const Player = (properties) => {
 
       if (keyPressed('left')) {
         // decrease x coordinate
-        this.x -= this.speed;
+        this.x -= this.speedX;
 
         // limit character to ladder bounds
         if (!this.onPlatform && this.onLadder) {
@@ -94,7 +140,7 @@ export const Player = (properties) => {
         } else {
           // move the camera and the player together so long as he doesn't reach the edge
           if (this.x < worldWidth - canvasWidth / 2) {
-            tileEngine.sx -= this.speed;
+            tileEngine.sx -= this.speedX;
           }
         }
         this.playAnimation('walk_left');
@@ -103,7 +149,7 @@ export const Player = (properties) => {
 
       if (keyPressed('right')) {
         // increase x coordinate
-        this.x += this.speed;
+        this.x += this.speedX;
 
         // limit character to ladder bounds
         if (!this.onPlatform && this.onLadder) {
@@ -118,7 +164,7 @@ export const Player = (properties) => {
         } else {
           // the camera and the player together so long as he doesn't reach the edge
           if (this.x > canvasWidth / 2) {
-            tileEngine.sx += this.speed;
+            tileEngine.sx += this.speedX;
           }
         }
         this.playAnimation('walk_right');
@@ -175,13 +221,13 @@ export const Player = (properties) => {
      * @param {Array.<{x: Number, y: Number, height: Number, width: Number}>} [ladders=[]]
      * @param {Array.<{x: Number, y: Number, height: Number, width: Number}>} [platforms=[]]
      */
-    checkCollisions: function (ladders = [], platforms = []) {
+    checkCollisions: function () {
       // get scaled dimensions of the sprite
       const wc = getWorldRect(this);
       // Check ladder collisions
       this.onLadder = false;
       this.currentLadder = null;
-      for (let ladder of ladders) {
+      for (let ladder of this.ladders) {
         if (ladder.x <= this.x && ladder.x + ladder.width >= this.x + wc.width
           && this.y >= ladder.y - wc.height && this.y + wc.height <= ladder.y + ladder.height
         ) {
@@ -193,7 +239,7 @@ export const Player = (properties) => {
       // Check platforms collisions
       this.onPlatform = false;
       this.currentPlatform = null;
-      for (let platform of platforms) {
+      for (let platform of this.platforms) {
         if (platform.x < this.x + wc.width*3/4 && platform.x + platform.width > this.x &&
           Math.abs(this.y + wc.height - platform.y) < 3
         ) {
