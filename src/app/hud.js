@@ -5,7 +5,7 @@ import { CHARSET_DEFAULTS as DEFAULTS } from './charset_defaults';
 export const HUD = (props) => {
   let go = GameObject(props);
 
-  go.update = function(dt) {
+  go.update = function (dt) {
     this.elapsedTime += dt;
     this.countdown -= dt;
     if (this.countdown < 0) {
@@ -20,7 +20,7 @@ export const HUD = (props) => {
       text: 'score 0',
       x: DEFAULTS.characterWidth,
       y: DEFAULTS.characterHeight,
-      update : function(dt) {
+      update: function (dt) {
         this.text = `score ${this.parent.score}`;
       }
     }),
@@ -35,13 +35,13 @@ export const HUD = (props) => {
       text: 'time 00:00',
       x: props.width - ('time: 00:00'.length * DEFAULTS.characterWidth * props.textScale) - DEFAULTS.characterWidth,
       y: DEFAULTS.characterHeight,
-      update: function(dt) {
+      update: function (dt) {
         const minutes = Math.floor(Math.ceil(this.parent.countdown) / 60);
         const seconds = Math.ceil(this.parent.countdown) - minutes * 60;
         this.text = `time ${minutes}:${seconds <= 9 ? '0' : ''}${seconds}`;
       }
     }),
-    {  scale: props.textScale, align: 'right' }
+    { scale: props.textScale, align: 'right' }
   );
 
   go.addChild(time);

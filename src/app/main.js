@@ -3,6 +3,7 @@ import { Player } from './player';
 import { Sock, SOCK_COLORS } from './sock';
 import { HUD } from './hud';
 import { TitleScreen } from './title_screen';
+import { RSpike } from './rspike';
 
 let { canvas } = init();
 
@@ -34,24 +35,39 @@ const setupPlayer = () => {
 
 const setupSocks = (worldWidth, lines) => {
   let socks = [];
-  const numberOfSocks = Math.floor(worldWidth / (13 * 6));
+  const numberOfSocks = Math.ceil(worldWidth / (13 * 7));
   for (let i = 0; i < lines.length; i++) {
     const yLine = lines[i];
     for (let j = 0; j < numberOfSocks; j++) {
       const p = randInt(0, 5);
       const color = SOCK_COLORS[p];
-      let sock = Sock({
-        x: j * 13 * 6,
-        y: yLine,
-        width: 13,
-        height: 15,
-        dx: 2 * (i % 2 === 0 ? -1 : 1),
-        worldWidth: worldWidth,
-        image: imageAssets['assets/sock-sheet'],
-        color: color,
-      });
-      tileEngine.addObject(sock);
-      socks.push(sock);
+      let item = null;
+      if (j % 6 === 0) {
+        item = RSpike({
+          type: 'spike',
+          x: j * 13 * 7 - 7,
+          y: yLine - 7,
+          width: 27,
+          height: 27,
+          dx: 2 * (i % 2 === 0 ? -1 : 1),
+          worldWidth: worldWidth,
+          imageSheet: imageAssets['assets/rotating_spike'],
+        });
+      } else {
+        item = Sock({
+          type: 'sock',
+          x: j * 13 * 7,
+          y: yLine,
+          width: 13,
+          height: 15,
+          dx: 2 * (i % 2 === 0 ? -1 : 1),
+          worldWidth: worldWidth,
+          image: imageAssets['assets/sock-sheet'],
+          color: color,
+        });
+      }
+      tileEngine.addObject(item);
+      socks.push(item);
     }
   }
   return socks;
@@ -65,7 +81,7 @@ const setupGame = () => {
     charset: imageAssets['assets/charset'],
   });
 
-  bindKeys('enter', function(e) {
+  bindKeys('enter', function (e) {
     e.preventDefault();
     scene = GAME_SCREEN;
   });
@@ -73,7 +89,7 @@ const setupGame = () => {
   tileEngine = TileEngine(dataAssets['assets/side_scroll_map']);
 
   const worldWidth = tileEngine.width * tileEngine.tilewidth;
-  
+
   let lines = [];
   tileEngine.layers.forEach(layer => {
     if (layer.name === "objects") {
@@ -119,8 +135,13 @@ const updateGameScreen = (dt) => {
   for (let i = 0; i < socks.length; i++) {
     let sock = socks[i];
     if (collides(sock, player)) {
-      sock.ttl = 0;
-      score += 1;
+      if (sock.type && sock.type === 'sock') {
+        sock.ttl = 0;
+        score += 1;
+      }
+      if (sock.type && sock.type === 'spike') {
+        console.log("hit spike");
+      }
     }
   }
   socks = socks.filter(sprite => sprite.isAlive());
@@ -132,7 +153,7 @@ const updateGameScreen = (dt) => {
   hud.update(dt);
 }
 
- // use kontra.gameLoop to play the animation
+// use kontra.gameLoop to play the animation
 const loop = GameLoop({
   update: function (dt) {
     switch (scene) {
@@ -177,6 +198,7 @@ load(
   'assets/player.png',
   'assets/charset.png',
   'assets/sock-sheet.png',
+  'assets/rotating_spike.png'
 ).then(assets => {
   initKeys();
   setupGame();

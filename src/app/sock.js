@@ -16,12 +16,12 @@ export const Sock = (properties) => {
       }
       this.advance(dt);
     },
-    render: function() {
+    render: function () {
       const colorIndex = SOCK_COLORS.indexOf(this.color);
       if (colorIndex === -1) {
         throw new Error(`Color "${this.color}" is not defined`);
       }
-      const sourceX = 0 + colorIndex*this.width;
+      const sourceX = 0 + colorIndex * this.width;
       const sourceY = 0;
       const sourceWidth = this.width;
       const sourceHeight = this.height;

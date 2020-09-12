@@ -55,7 +55,7 @@ export const Player = (properties) => {
     ladders,
   } = properties;
 
-  let playerSpriteSheet = SpriteSheet({
+  const playerSpriteSheet = SpriteSheet({
     image: imageSheet,
     frameWidth: 12,
     frameHeight: 16,
