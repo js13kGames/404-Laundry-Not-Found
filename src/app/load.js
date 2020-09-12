@@ -21,6 +21,7 @@ load(
 
   let ladders = [];
   let platforms = [];
+  let lines = []
   tileEngine.layers.forEach(layer => {
     if (layer.name === "objects") {
       layer.objects.forEach(obj => {
@@ -31,6 +32,10 @@ load(
         // add platforms
         if (obj.type === "platform") {
           platforms.push(obj);
+        }
+        // Adding lines y-coordinates
+        if (obj.type === "line") {
+          lines.push(obj.y);
         }
       });
     }
@@ -92,23 +97,26 @@ load(
 
   let socks = [];
 
-  const numberOfSocks = Math.floor(worldWidth / (13*6));
+  const numberOfSocks = Math.floor(worldWidth / (13 * 6));
 
-  for (let i = 0; i < numberOfSocks; i++) {
-    const p = randInt(0, 5);
-    const color = SOCK_COLORS[p];
-    let sock = Sock({
-      x: i*13*6,
-      y: 480 - (20 * 8),
-      width: 13,
-      height: 15,
-      dx: 2,
-      worldWidth: worldWidth,
-      image: imageAssets['assets/sock-sheet'],
-      color: color,
-    });
-    tileEngine.addObject(sock);
-    socks.push(sock);
+  for (let i = 0; i < lines.length; i++) {
+    const yLine = lines[i];
+    for (let j = 0; j < numberOfSocks; j++) {
+      const p = randInt(0, 5);
+      const color = SOCK_COLORS[p];
+      let sock = Sock({
+        x: j * 13 * 6,
+        y: yLine,
+        width: 13,
+        height: 15,
+        dx: 2,
+        worldWidth: worldWidth,
+        image: imageAssets['assets/sock-sheet'],
+        color: color,
+      });
+      tileEngine.addObject(sock);
+      socks.push(sock);
+    }
   }
 
   let score = 0;
@@ -132,7 +140,7 @@ load(
         let sock = socks[i];
         if (collides(sock, player)) {
           sock.ttl = 0;
-          score +=1;
+          score += 1;
         }
       }
 
