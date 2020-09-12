@@ -109,7 +109,7 @@ load(
         y: yLine,
         width: 13,
         height: 15,
-        dx: 2,
+        dx: 2 * (i % 2 === 0 ? -1 : 1),
         worldWidth: worldWidth,
         image: imageAssets['assets/sock-sheet'],
         color: color,

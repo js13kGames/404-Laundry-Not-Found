@@ -8,8 +8,11 @@ export const Sock = (properties) => {
   return Sprite(Object.assign(properties, {
     update: function (dt) {
       // wrap the sprite to the other side of the screen
-      if (this.x > this.worldWidth - this.width) {
+      if (this.dx > 0 && this.x > this.worldWidth - this.width) {
         this.x -= this.x;
+      }
+      if (this.dx < 0 && this.x < 0) {
+        this.x = this.worldWidth - this.x;
       }
       this.advance(dt);
     },
