@@ -4,6 +4,7 @@ import { Sock, SOCK_COLORS } from './sock';
 import { HUD } from './hud';
 import { TitleScreen } from './title_screen';
 import { RSpike } from './rspike';
+import { GameOverScreen } from './game_over_screen';
 
 let { canvas } = init();
 
@@ -17,9 +18,12 @@ let score = 0;
 let hud = null;
 
 let titleScreen = null;
+let gameOverScreen = null;
 
 const TITLE_SCREEN = 'title';
 const GAME_SCREEN = 'game';
+const GAME_OVER = 'over';
+
 let scene = TITLE_SCREEN;
 
 const setupPlayer = () => {
@@ -42,7 +46,7 @@ const setupSocks = (worldWidth, lines) => {
       const p = randInt(0, 5);
       const color = SOCK_COLORS[p];
       let item = null;
-      if (j % 6 === 0) {
+      if (j % 4 === 0) {
         item = RSpike({
           type: 'spike',
           x: j * 13 * 7 - 7,
@@ -81,11 +85,24 @@ const setupGame = () => {
     charset: imageAssets['assets/charset'],
   });
 
+  gameOverScreen = GameOverScreen({
+    width: canvas.width,
+    height: canvas.height,
+    charset: imageAssets['assets/charset'],
+    deathImage: imageAssets['assets/rip']
+  })
+
   bindKeys('enter', function (e) {
     e.preventDefault();
     if (scene === TITLE_SCREEN) {
       titleScreen.hide();
       scene = GAME_SCREEN;
+    }
+    if (scene === GAME_OVER) {
+      titleScreen.show();
+      // gameOverScreen.hide();
+      player.ttl = Infinity;
+      scene = TITLE_SCREEN;
     }
   });
 
@@ -135,6 +152,10 @@ const setupGame = () => {
 const updateGameScreen = (dt) => {
   player.update(dt);
 
+  if (!player.isAlive()) {
+    scene = GAME_OVER;
+  }
+
   for (let i = 0; i < socks.length; i++) {
     let sock = socks[i];
     if (collides(sock, player)) {
@@ -143,7 +164,7 @@ const updateGameScreen = (dt) => {
         score += 1;
       }
       if (sock.type && sock.type === 'spike') {
-        console.log("hit spike");
+        player.ttl = 0;
       }
     }
   }
@@ -166,10 +187,12 @@ const loop = GameLoop({
       case GAME_SCREEN:
         updateGameScreen(dt);
         break;
+      case GAME_OVER:
+        gameOverScreen.update(dt);
+        break;
     }
   },
   render: function () {
-
     switch (scene) {
       case TITLE_SCREEN:
         titleScreen.render();
@@ -186,6 +209,9 @@ const loop = GameLoop({
         // render HUD
         hud.render();
         break;
+      case GAME_OVER:
+        gameOverScreen.render();
+        break;
     }
   }
 });
@@ -201,7 +227,8 @@ load(
   'assets/player.png',
   'assets/charset.png',
   'assets/sock-sheet.png',
-  'assets/rotating_spike.png'
+  'assets/rotating_spike.png',
+  'assets/rip.png',
 ).then(assets => {
   initKeys();
   setupGame();

@@ -213,6 +213,10 @@ export const Player = (properties) => {
           }
       }
 
+      if (this.y + wc.height > canvasHeight) {
+        this.ttl = 0;
+      }
+
       this.advance(dt);
     },
     /**
