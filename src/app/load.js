@@ -19,22 +19,19 @@ load(
 
   const worldWidth = tileEngine.width * tileEngine.tilewidth;
 
-  // Create ladders
   let ladders = [];
-  tileEngine.layers.forEach(layer => {
-    if (layer.name == "ladders") {
-      layer.objects.forEach(element => {
-        ladders.push(element);
-      });
-    }
-  });
-
-  // Create platforms
   let platforms = [];
   tileEngine.layers.forEach(layer => {
-    if (layer.name == "platforms") {
-      layer.objects.forEach(element => {
-        platforms.push(element);
+    if (layer.name === "objects") {
+      layer.objects.forEach(obj => {
+        // add ladders
+        if (obj.type === "ladder") {
+          ladders.push(obj);
+        }
+        // add platforms
+        if (obj.type === "platform") {
+          platforms.push(obj);
+        }
       });
     }
   });
