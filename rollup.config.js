@@ -38,6 +38,7 @@ export default {
         scale: true,
         anchor: true,
         group: true,
+        opacity: true,
       },
       vector: {
         // enable vector length functionality

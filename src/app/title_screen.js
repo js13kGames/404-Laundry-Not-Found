@@ -1,4 +1,4 @@
-import { GameObject } from 'kontra';
+import { GameObject, Scene } from 'kontra';
 import { SpriteFont } from './text';
 import { CHARSET_DEFAULTS as DEFAULTS } from './charset_defaults';
 
@@ -22,8 +22,6 @@ export const TitleScreen = (props) => {
     { scale: 2, align: 'left' }
   );
 
-  go.addChild(title);
-
   let back404 = new SpriteFont(
     Object.assign(DEFAULTS, {
       sourceImage: props.charset,
@@ -38,8 +36,6 @@ export const TitleScreen = (props) => {
     { scale: 10, align: 'left' }
   );
 
-  go.addChild(back404);
-
   let cont = new SpriteFont(
     Object.assign(DEFAULTS, {
       sourceImage: props.charset,
@@ -48,23 +44,21 @@ export const TitleScreen = (props) => {
       y: props.height - DEFAULTS.characterHeight * 2 * 2,
       dt: 0,
       alpha: 1,
-      render: function () {
+      opacity: 1,
+      update: function () {
         this.dt += 1 / 60;
-        this.alpha -= 1 / 60;
+        this.opacity -= 1 / 60;
         if (this.dt > 1) {
           this.dt = 0;
-          this.alpha = 1;
+          this.opacity = 1;
         }
-        this.context.save();
-        this.context.globalAlpha = this.alpha;
-        this.draw();
-        this.context.restore();
       },
     }),
     { scale: 2, align: 'left' }
   );
 
-  go.addChild(cont);
-
-  return go;
+  return Scene({
+    name: 'title',
+    children: [go, title, back404, cont],
+  })
 }

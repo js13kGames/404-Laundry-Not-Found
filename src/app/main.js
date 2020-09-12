@@ -83,7 +83,10 @@ const setupGame = () => {
 
   bindKeys('enter', function (e) {
     e.preventDefault();
-    scene = GAME_SCREEN;
+    if (scene === TITLE_SCREEN) {
+      titleScreen.hide();
+      scene = GAME_SCREEN;
+    }
   });
 
   tileEngine = TileEngine(dataAssets['assets/side_scroll_map']);
