@@ -1,14 +1,6 @@
 import { GameObject } from 'kontra';
 import { SpriteFont } from './text';
-
-const DEFAULTS = {
-  characterWidth: 8,
-  characterHeight: 8,
-  horizontalSpacing: 0,
-  verticalSpacing: 0,
-  characterSet: 'abcdefghijklmnopqrstuvwxyz0123456789.:!-%,/',
-  columnCount: 43
-}
+import { CHARSET_DEFAULTS as DEFAULTS } from './charset_defaults';
 
 export const TitleScreen = (props) => {
 
