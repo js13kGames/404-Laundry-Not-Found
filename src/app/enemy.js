@@ -4,8 +4,8 @@ export const Enemy = (properties) => {
 
   const enemySpriteSheet = SpriteSheet({
     image: properties.imageSheet,
-    frameWidth: 100,
-    frameHeight: 120,
+    frameWidth: 50,
+    frameHeight: 60,
     animations: {
       idle: {
         frames: '0',
