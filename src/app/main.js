@@ -4,9 +4,8 @@ import { Sock, SOCK_COLORS } from './sock';
 import { HUD } from './hud';
 import { TitleScreen } from './title_screen';
 import { RSpike } from './rspike';
-import { GameOverScreen } from './game_over_screen';
 import { Enemy } from './enemy';
-import { zzfx } from './zzfx';
+// import { zzfx } from './zzfx';
 
 let { canvas } = init();
 
@@ -87,13 +86,15 @@ const setupGame = () => {
     width: canvas.width,
     height: canvas.height,
     charset: imageAssets['assets/charset'],
+    mainText: 'Start'
   });
 
-  gameOverScreen = GameOverScreen({
+  gameOverScreen = TitleScreen({
     width: canvas.width,
     height: canvas.height,
     charset: imageAssets['assets/charset'],
-    deathImage: imageAssets['assets/rip']
+    deathImage: imageAssets['assets/rip'],
+    mainText: '404 - You died',
   })
 
   tileEngine = TileEngine(dataAssets['assets/side_scroll_map']);
@@ -179,7 +180,7 @@ const resetGame = (worldWidth, lines) => {
 }
 
 const playerDies = () => {
-  zzfx(...[,,925,.04,.3,.6,1,.3,,6.27,-184,.09,.17]);
+  // zzfx(...[,,925,.04,.3,.6,1,.3,,6.27,-184,.09,.17]);
   player.ttl = 0;
   tileEngine.removeObject(player);
 }
@@ -199,7 +200,7 @@ const updateGameScreen = (dt) => {
       if (sock.type && sock.type === 'sock') {
         sock.ttl = 0;
         tileEngine.removeObject(sock);
-        zzfx(...[,.1,75,.03,.08,.17,1,1.88,7.83,,,,,.4]);
+        // zzfx(...[,.1,75,.03,.08,.17,1,1.88,7.83,,,,,.4]);
         score += 1;
       }
       if (sock.type && sock.type === 'spike') {
@@ -280,10 +281,10 @@ load(
   'assets/side_scroll_map.json',
   'assets/nature-paltformer-tileset-16x16.png',
   'assets/player.png',
-  'assets/charset.png',
+  // 'assets/charset.png',
   'assets/sock-sheet.png',
   'assets/rotating_spike.png',
-  'assets/rip.png',
+  // 'assets/rip.png',
   'assets/washing_machine.png',
 ).then(assets => {
   initKeys();

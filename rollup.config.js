@@ -17,10 +17,10 @@ const assets = [
   'assets/side_scroll_map.json',
   'assets/nature-paltformer-tileset-16x16.png',
   'assets/player.png',
-  'assets/charset.png',
+  // 'assets/charset.png',
   'assets/sock-sheet.png',
   'assets/rotating_spike.png',
-  'assets/rip.png',
+  // 'assets/rip.png',
   'assets/washing_machine.png',
 ];
 
@@ -51,7 +51,7 @@ export default {
         group: true,
         opacity: true,
       },
-      sprite: { image: true, animation: true }
+      sprite: { animation: true }
     }),
     // To include css from scripts, combine and minimize
     postcss({

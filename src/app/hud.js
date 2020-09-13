@@ -1,6 +1,4 @@
-import { GameObject } from 'kontra';
-import { SpriteFont } from './text';
-import { CHARSET_DEFAULTS as DEFAULTS } from './charset_defaults';
+import { GameObject, Scene, Text } from 'kontra';
 
 export const HUD = (props) => {
   let go = GameObject(props);
@@ -14,37 +12,42 @@ export const HUD = (props) => {
     this.children.map(child => child.update && child.update(dt));
   }
 
-  let score = new SpriteFont(
-    Object.assign(DEFAULTS, {
-      sourceImage: props.charset,
-      text: 'score 0',
-      x: DEFAULTS.characterWidth,
-      y: DEFAULTS.characterHeight,
-      update: function (dt) {
-        this.text = `score ${this.parent.score}`;
+  let score = Text({
+    text: '404 Laundry Not Found',
+    font: "12px 'Courier New', Courier, monospace",
+    color: 'white',
+    x: 12,
+    y: 12,
+    update: function (dt) {
+      this.text = `score ${this.parent.score}`;
+    }
+  });
+
+  let time = Text({
+    text: '404 Laundry Not Found',
+    font: "12px 'Courier New', Courier, monospace",
+    color: 'white',
+    x: props.width - 12,
+    y: 12,
+    textAlign: 'right',
+    update: function (dt) {
+      const minutes = Math.floor(Math.ceil(this.parent.countdown) / 60);
+      const seconds = Math.ceil(this.parent.countdown) - minutes * 60;
+      this.text = `time ${minutes}:${seconds <= 9 ? '0' : ''}${seconds}`;
+    }
+  });
+
+  return Scene({
+    name: 'title',
+    children: [go, score, time],
+    elapsedTime: props.elapsedTime,
+    countdown: props.countdown,
+    update: function (dt) {
+      this.elapsedTime += dt;
+      this.countdown -= dt;
+      if (this.countdown < 0) {
+        this.countdown = 0;
       }
-    }),
-    { scale: props.textScale }
-  );
-
-  go.addChild(score);
-
-  let time = new SpriteFont(
-    Object.assign(DEFAULTS, {
-      sourceImage: props.charset,
-      text: 'time 00:00',
-      x: props.width - ('time: 00:00'.length * DEFAULTS.characterWidth * props.textScale) - DEFAULTS.characterWidth,
-      y: DEFAULTS.characterHeight,
-      update: function (dt) {
-        const minutes = Math.floor(Math.ceil(this.parent.countdown) / 60);
-        const seconds = Math.ceil(this.parent.countdown) - minutes * 60;
-        this.text = `time ${minutes}:${seconds <= 9 ? '0' : ''}${seconds}`;
-      }
-    }),
-    { scale: props.textScale, align: 'right' }
-  );
-
-  go.addChild(time);
-
-  return go;
+    }
+  });
 }
