@@ -93,25 +93,6 @@ const setupGame = () => {
     deathImage: imageAssets['assets/rip']
   })
 
-  bindKeys('enter', function (e) {
-    e.preventDefault();
-
-    if (scene === TITLE_SCREEN) {
-      scene = GAME_SCREEN;
-      titleScreen.hide();
-    }
-
-    if (scene === GAME_OVER) {
-      score = 0;
-      countdown = 60;
-      player = setupPlayer();
-      socks = setupSocks(worldWidth, lines);
-      
-      scene = TITLE_SCREEN;
-      titleScreen.show();
-    }
-  });
-
   tileEngine = TileEngine(dataAssets['assets/side_scroll_map']);
 
   const worldWidth = tileEngine.width * tileEngine.tilewidth;
@@ -135,6 +116,29 @@ const setupGame = () => {
       });
     }
   });
+
+  resetGame(worldWidth, lines);
+
+  bindKeys('enter', function (e) {
+    e.preventDefault();
+
+    if (scene === TITLE_SCREEN) {
+      scene = GAME_SCREEN;
+      titleScreen.hide();
+    }
+
+    if (scene === GAME_OVER) {
+      resetGame(worldWidth, lines);
+      scene = TITLE_SCREEN;
+      titleScreen.show();
+    }
+  });
+
+}
+
+const resetGame = (worldWidth, lines) => {
+
+  tileEngine = TileEngine(dataAssets['assets/side_scroll_map']);
 
   player = setupPlayer();
 
