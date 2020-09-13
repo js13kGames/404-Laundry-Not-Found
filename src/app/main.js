@@ -15,6 +15,7 @@ let socks = [];
 let tileEngine = null;
 let player = null;
 let score = 0;
+let countdown = 0;
 let hud = null;
 
 let titleScreen = null;
@@ -94,15 +95,20 @@ const setupGame = () => {
 
   bindKeys('enter', function (e) {
     e.preventDefault();
+
     if (scene === TITLE_SCREEN) {
-      titleScreen.hide();
       scene = GAME_SCREEN;
+      titleScreen.hide();
     }
+
     if (scene === GAME_OVER) {
-      titleScreen.show();
-      // gameOverScreen.hide();
-      player.ttl = Infinity;
+      score = 0;
+      countdown = 60;
+      player = setupPlayer();
+      socks = setupSocks(worldWidth, lines);
+      
       scene = TITLE_SCREEN;
+      titleScreen.show();
     }
   });
 
@@ -138,11 +144,12 @@ const setupGame = () => {
   socks = setupSocks(worldWidth, lines);
 
   score = 0;
+  countdown = 60;
 
   hud = HUD({
     charset: imageAssets['assets/charset'],
     elapsedTime: 0,
-    countdown: 60,
+    countdown: countdown,
     score: score,
     width: canvas.width,
     textScale: 1.5
@@ -154,6 +161,7 @@ const updateGameScreen = (dt) => {
 
   if (!player.isAlive()) {
     scene = GAME_OVER;
+    gameOverScreen.show();
   }
 
   for (let i = 0; i < socks.length; i++) {
