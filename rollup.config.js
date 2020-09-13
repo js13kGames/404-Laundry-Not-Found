@@ -13,6 +13,19 @@ import copy from 'rollup-plugin-copy';
 // dev build if watching, prod build if not
 const production = !process.env.ROLLUP_WATCH;
 
+const assets = [
+  'assets/side_scroll_map.json',
+  'assets/nature-paltformer-tileset-16x16.png',
+  'assets/player.png',
+  'assets/charset.png',
+  'assets/sock-sheet.png',
+  'assets/rotating_spike.png',
+  'assets/rip.png',
+  'assets/washing_machine.png',
+];
+
+let targets = assets.map(x => { return {src: x, dest: 'dist/assets'} });
+
 export default {
   input: 'src/index.js',
   output: [
@@ -31,8 +44,6 @@ export default {
       gameObject: {
         // enable only velocity and rotation functionality
         velocity: true,
-        rotation: true,
-        acceleration: true,
         ttl: true,
         camera: true,
         scale: true,
@@ -40,11 +51,6 @@ export default {
         group: true,
         opacity: true,
       },
-      vector: {
-        // enable vector length functionality
-        length: true
-      },
-      debug: true,
       sprite: { image: true, animation: true }
     }),
     // To include css from scripts, combine and minimize
@@ -87,10 +93,7 @@ export default {
       watch: true, // default: false
     }),
     copy({
-      targets: [
-        { src: 'assets/*.json', dest: 'dist/assets' },
-        { src: 'assets/*.png', dest: 'dist/assets' }
-      ]
+      targets: targets,
     }),
     !production && serve({
       open: false,
