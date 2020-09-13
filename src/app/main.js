@@ -17,15 +17,17 @@ let enemies = [];
 let tileEngine = null;
 let player = null;
 let score = 0;
-let countdown = 0;
+let countdown = 120;
 let hud = null;
 
 let titleScreen = null;
 let gameOverScreen = null;
+let winScreen = null;
 
 const TITLE_SCREEN = 'title';
 const GAME_SCREEN = 'game';
-const GAME_OVER = 'over';
+const GAME_OVER_SCREEN = 'over';
+const WIN_SCREEN = 'win';
 
 let scene = TITLE_SCREEN;
 
@@ -93,9 +95,21 @@ const setupGame = () => {
     width: canvas.width,
     height: canvas.height,
     charset: imageAssets['assets/charset'],
-    deathImage: imageAssets['assets/rip'],
     mainText: '404 - You died',
-  })
+    continueText: 'Press [enter] to restart',
+    color: "black",
+    hidden: true
+  });
+
+  winScreen = TitleScreen({
+    width: canvas.width,
+    height: canvas.height,
+    charset: imageAssets['assets/charset'],
+    mainText: 'You won!',
+    continueText: 'Press [enter] to restart',
+    color: "#0099DB",
+    hidden: true
+  });
 
   tileEngine = TileEngine(dataAssets['assets/side_scroll_map']);
 
@@ -148,7 +162,13 @@ const setupGame = () => {
       titleScreen.hide();
     }
 
-    if (scene === GAME_OVER) {
+    if (scene === GAME_OVER_SCREEN) {
+      resetGame(worldWidth, lines);
+      scene = TITLE_SCREEN;
+      titleScreen.show();
+    }
+
+    if (scene === WIN_SCREEN) {
       resetGame(worldWidth, lines);
       scene = TITLE_SCREEN;
       titleScreen.show();
@@ -167,7 +187,7 @@ const resetGame = (worldWidth, lines) => {
   socks = setupSocks(worldWidth, lines);
 
   score = 0;
-  countdown = 60;
+  countdown = 120;
 
   hud = HUD({
     charset: imageAssets['assets/charset'],
@@ -189,7 +209,7 @@ const updateGameScreen = (dt) => {
   player.update(dt);
 
   if (!player.isAlive()) {
-    scene = GAME_OVER;
+    scene = GAME_OVER_SCREEN;
     gameOverScreen.show();
   }
 
@@ -209,6 +229,13 @@ const updateGameScreen = (dt) => {
     }
   }
   socks = socks.filter(sprite => sprite.isAlive());
+
+  if (socks.length === 0) {
+    scene = WIN_SCREEN;
+    winScreen.mainText = `You won!\nScore ${score}`
+    winScreen.show();
+  }
+
   socks.forEach((sock) => {
     sock.update(dt);
   });
@@ -227,6 +254,11 @@ const updateGameScreen = (dt) => {
 
   hud.score = score;
   hud.update(dt);
+  countdown = hud.countdown;
+
+  if (countdown <= 0) {
+    playerDies();
+  }
 }
 
 // use kontra.gameLoop to play the animation
@@ -239,8 +271,11 @@ const loop = GameLoop({
       case GAME_SCREEN:
         updateGameScreen(dt);
         break;
-      case GAME_OVER:
+      case GAME_OVER_SCREEN:
         gameOverScreen.update(dt);
+        break;
+      case WIN_SCREEN:
+        winScreen.update(dt);
         break;
     }
   },
@@ -265,8 +300,11 @@ const loop = GameLoop({
         // render HUD
         hud.render();
         break;
-      case GAME_OVER:
+      case GAME_OVER_SCREEN:
         gameOverScreen.render();
+        break;
+      case WIN_SCREEN:
+        winScreen.render();
         break;
     }
   }

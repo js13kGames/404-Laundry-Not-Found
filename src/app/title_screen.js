@@ -5,7 +5,7 @@ export const TitleScreen = (props) => {
   let go = GameObject(Object.assign(props, {
     render: function () {
       this.draw();
-      this.context.fillStyle = "gray";
+      this.context.fillStyle = props.color || "gray";
       this.context.fillRect(0, 0, this.width, this.height);
     }
   }));
@@ -25,11 +25,15 @@ export const TitleScreen = (props) => {
     color: 'white',
     x: props.width/2,
     y: props.height/2,
-    anchor: {x: 0.5, y: 0.5},
+    // anchor: {x: 0.5, y: 0.5},
+    textAlign: 'center',
+    update: function () {
+      this.text = this.parent.mainText || this.text;
+    },
   });
 
   let cont = Text({
-    text: 'Press [Enter] to start',
+    text: props.continueText || 'Press [Enter] to start',
     font: "32px 'Courier New', Courier, monospace",
     color: 'white',
     x: props.width/2,
