@@ -6,6 +6,7 @@ import { TitleScreen } from './title_screen';
 import { RSpike } from './rspike';
 import { GameOverScreen } from './game_over_screen';
 import { Enemy } from './enemy';
+import { zzfx } from './zzfx';
 
 let { canvas } = init();
 
@@ -177,6 +178,12 @@ const resetGame = (worldWidth, lines) => {
   });
 }
 
+const playerDies = () => {
+  zzfx(...[,,925,.04,.3,.6,1,.3,,6.27,-184,.09,.17]);
+  player.ttl = 0;
+  tileEngine.removeObject(player);
+}
+
 const updateGameScreen = (dt) => {
   player.update(dt);
 
@@ -192,11 +199,11 @@ const updateGameScreen = (dt) => {
       if (sock.type && sock.type === 'sock') {
         sock.ttl = 0;
         tileEngine.removeObject(sock);
+        zzfx(...[,.1,75,.03,.08,.17,1,1.88,7.83,,,,,.4]);
         score += 1;
       }
       if (sock.type && sock.type === 'spike') {
-        player.ttl = 0;
-        tileEngine.removeObject(player);
+        playerDies();
       }
     }
   }
@@ -209,8 +216,7 @@ const updateGameScreen = (dt) => {
   for (let i = 0; i < enemies.length; i++) {
     let enemy = enemies[i];
     if (collides(enemy, player)) {
-      player.ttl = 0;
-      tileEngine.removeObject(player);
+      playerDies();
     }
   }
 
