@@ -1,4 +1,10 @@
-# js13kGames Rollup Boilerplate
+# js13kGames 2020
+
+Platformer Game for js13kGames 2020.
+
+> After so many years of mystery, the time has finally come. Help our hero to recover all humanity missing socks at the hand of evil washing machines in 404 sock not found.
+
+## js13kGames Rollup Boilerplate
 Starter boilerplate for [js13kgames](https://www.js13kgames.com/) Game Jam using [Rollup](https://rollupjs.org/guide/en/).
 
 ## Getting Started
