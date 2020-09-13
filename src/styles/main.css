@@ -30,3 +30,18 @@ canvas {
   height: auto;
   background-color: #0099DB;
 }
+
+div.controls {
+  margin: 10px;
+  text-align: left;
+  color:whitesmoke;
+  font-family: 'Courier New', Courier, monospace;
+  margin-left: -10em;
+}
+
+div.controls span.key {
+  border: 2px solid white;
+  font-weight: bolder;
+  font-size: 2em;
+  vertical-align: middle;
+}
