@@ -5,12 +5,14 @@ import { HUD } from './hud';
 import { TitleScreen } from './title_screen';
 import { RSpike } from './rspike';
 import { GameOverScreen } from './game_over_screen';
+import { Enemy } from './enemy';
 
 let { canvas } = init();
 
 let ladders = [];
 let platforms = [];
 let socks = [];
+let enemies = [];
 
 let tileEngine = null;
 let player = null;
@@ -113,6 +115,23 @@ const setupGame = () => {
         if (obj.type === "line") {
           lines.push(obj.y);
         }
+        // Adding enemies
+        if (obj.type === "enemy") {
+          let props = Object.assign({}, obj);
+          obj.properties.forEach(element => {
+            props[element.name] = element.value;
+          });
+          delete props.properties;
+          let e = Enemy(Object.assign(props, {
+            width: 32,
+            height: 38,
+            y: props.y - 6,
+            dx: 1.5 * (enemies.length % 2 === 0 ? -1 : 1),
+            imageSheet: imageAssets['assets/washing_machine'],
+          }));
+          tileEngine.addObject(e);
+          enemies.push(e);
+        }
       });
     }
   });
@@ -137,8 +156,6 @@ const setupGame = () => {
 }
 
 const resetGame = (worldWidth, lines) => {
-
-  tileEngine = TileEngine(dataAssets['assets/side_scroll_map']);
 
   player = setupPlayer();
 
@@ -168,21 +185,37 @@ const updateGameScreen = (dt) => {
     gameOverScreen.show();
   }
 
+  // Collisions with socks
   for (let i = 0; i < socks.length; i++) {
     let sock = socks[i];
     if (collides(sock, player)) {
       if (sock.type && sock.type === 'sock') {
         sock.ttl = 0;
+        tileEngine.removeObject(sock);
         score += 1;
       }
       if (sock.type && sock.type === 'spike') {
         player.ttl = 0;
+        tileEngine.removeObject(player);
       }
     }
   }
   socks = socks.filter(sprite => sprite.isAlive());
   socks.forEach((sock) => {
     sock.update(dt);
+  });
+
+  // Collisions with enemies
+  for (let i = 0; i < enemies.length; i++) {
+    let enemy = enemies[i];
+    if (collides(enemy, player)) {
+      player.ttl = 0;
+      tileEngine.removeObject(player);
+    }
+  }
+
+  enemies.forEach((enemy) => {
+    enemy.update(dt);
   });
 
   hud.score = score;
@@ -216,6 +249,10 @@ const loop = GameLoop({
         socks.forEach((sock) => {
           sock.render();
         });
+        // rending enemies
+        enemies.forEach((enemy) => {
+          enemy.render();
+        });
         // render player
         player.render();
         // render HUD
@@ -241,6 +278,7 @@ load(
   'assets/sock-sheet.png',
   'assets/rotating_spike.png',
   'assets/rip.png',
+  'assets/washing_machine.png',
 ).then(assets => {
   initKeys();
   setupGame();
