@@ -59,7 +59,7 @@ export default {
       extract: path.resolve (production ? 'dist/main.min.css' : 'dist/main.css')
     }),
     production && terser({
-      ecma: 2020,
+      ecma: '2020',
       module: true,
       toplevel: true,
       compress: {
@@ -72,14 +72,8 @@ export default {
         unsafe_comps: true,
         unsafe_math: true,
         unsafe_methods: true,
-        unsafe_symbols: true,
       },
-      mangle: {
-        properties: true,
-      },
-      output: {
-        wrap_func_args: false,
-      },
+      mangle: true
     }),
     // to use html template and include script and styles bundles
     htmlTemplate({
